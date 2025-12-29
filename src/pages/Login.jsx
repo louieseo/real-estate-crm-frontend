@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [role, setRole] = useState("admin"); // 기본 admin
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -28,7 +31,18 @@ const Login = () => {
         localStorage.setItem("token", response.data.token);
       }
 
+      // 역할(role)도 저장 추가
+      localStorage.setItem("role", role);
+
+      // 로그인 성공 후 페이지 이동
       alert(`${role.toUpperCase()} 로그인 성공!`);
+
+      if (role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/agent");
+      }
+
       console.log("Login success:", response.data);
     } catch (err) {
       console.error(err);
@@ -86,9 +100,7 @@ const Login = () => {
           />
         </div>
 
-        {error && (
-          <p style={{ color: "red", marginTop: "10px" }}>{error}</p>
-        )}
+        {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
 
         <button
           type="submit"
