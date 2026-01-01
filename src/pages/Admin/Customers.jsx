@@ -6,6 +6,8 @@ import { useContext } from "react";
 import { CustomerContext } from "../../context/CustomerContext";
 
 const Customers = () => {
+  // 이런 곳 (return 위 JS 영역)
+
   // ⬇⬇ 여기 추가!
   const navigate = useNavigate();
 
@@ -28,7 +30,7 @@ const Customers = () => {
         return new Date(c.leaseEnd) >= today;
       }
 
-      // 이번 달 종료 필터
+      // 이번 달(30일) 종료 필터
       if (filterType === "thisMonth") {
         return (
           leaseEnd.getFullYear() === today.getFullYear() &&
@@ -55,6 +57,23 @@ const Customers = () => {
   // 더미로 사용하던 데이터 없애고 고객 등록 폼으로 Customers 리스트에 업데이트 되게 함.
   const { customers } = useContext(CustomerContext);
 
+  // D-day 추가
+  const getDDay = (leaseEnd) => {
+    if (!leaseEnd) return "-";
+
+    const today = new Date();
+    const end = new Date(leaseEnd);
+
+    const diff = end - today;
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (days < 0) return "만료";
+    if (days === 0) return "D-DAY";
+
+    return `D-${days}`;
+  };
+
+  // 여기부터 JSX 영역 (화면 그려지는 부분)
   return (
     <div>
       <h1>Customers</h1>
@@ -78,6 +97,7 @@ const Customers = () => {
 
       {/* 기존 필터 버튼들 */}
       <button onClick={() => setFilterType("all")}>전체보기</button>
+
       <button
         onClick={() => setFilterType("progress")}
         style={{ marginLeft: "10px" }}
@@ -86,22 +106,24 @@ const Customers = () => {
       </button>
 
       <button
-        onClick={() => setFilterType("thisMonth")}
-        style={{ marginLeft: "10px" }}
-      >
-        이번 달 종료
-      </button>
-      <button
         onClick={() => setFilterType("60days")}
         style={{ marginLeft: "10px" }}
       >
-        60일 이내 종료
+        60일종료
       </button>
+
+      <button
+        onClick={() => setFilterType("thisMonth")}
+        style={{ marginLeft: "10px" }}
+      >
+        30일종료
+      </button>
+
       <button
         onClick={() => setFilterType("expired")}
         style={{ marginLeft: "10px" }}
       >
-        이미 종료됨
+        종료
       </button>
 
       {/* 테이블 상자 */}
@@ -126,6 +148,7 @@ const Customers = () => {
               <th style={thStyle}>종료일</th>
               <th style={thStyle}>계약종류</th>
               <th style={thStyle}>계약상태</th>
+              <th style={thStyle}>D-Day</th>
               <th style={thStyle}>디로스</th>
             </tr>
           </thead>
@@ -141,7 +164,20 @@ const Customers = () => {
                 <td style={tdStyle}>{c.leaseStart}</td>
                 <td style={tdStyle}>{c.leaseEnd}</td>
                 <td style={tdStyle}>{c.contractType}</td>
-                <td style={tdStyle}>
+                <td
+                  style={{
+                    ...tdStyle,
+                    color: (() => {
+                      if (!c.leaseEnd) return "green";
+
+                      const today = new Date();
+                      const end = new Date(c.leaseEnd);
+
+                      return end < today ? "red" : "green";
+                    })(),
+                    fontWeight: "bold",
+                  }}
+                >
                   {(() => {
                     if (!c.leaseEnd) return "진행";
 
@@ -151,6 +187,7 @@ const Customers = () => {
                     return end < today ? "종료" : "진행";
                   })()}
                 </td>
+                <td style={tdStyle}>{getDDay(c.leaseEnd)}</td>
                 <td style={tdStyle}>{c.derosDate}</td>
               </tr>
             ))}
