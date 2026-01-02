@@ -73,6 +73,8 @@ const Customers = () => {
     return `D-${days}`;
   };
 
+  // 고객 상세페이지
+
   // 여기부터 JSX 영역 (화면 그려지는 부분)
   return (
     <div>
@@ -157,7 +159,17 @@ const Customers = () => {
             {getFilteredCustomers().map((c) => (
               <tr key={c.id} style={{ borderBottom: "1px solid #eee" }}>
                 <td style={tdStyle}>{c.id}</td>
-                <td style={tdStyle}>{c.name}</td>
+                <td
+                  style={{
+                    ...tdStyle,
+                    color: "blue",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                  onClick={() => navigate(`/admin/customers/${c.id}`)}
+                >
+                  {c.name}
+                </td>
                 <td style={tdStyle}>{c.email}</td>
                 <td style={tdStyle}>{c.phone}</td>
                 <td style={tdStyle}>{c.contractDate}</td>

@@ -15,6 +15,8 @@ import Leads from "./pages/Admin/Leads";
 import AgentDashboard from "./pages/Agent/AgentDashboard";
 import { CustomerProvider } from "./context/CustomerContext";
 
+import CustomerDetail from "./pages/Admin/CustomerDetail";
+
 function App() {
   return (
     <BrowserRouter>
@@ -35,6 +37,8 @@ function App() {
 
               {/* 고객 리스트 페이지 */}
               <Route path="customers" element={<Customers />} />
+              {/* ⬇⬇ 고객상세페이지 추가 */}
+              <Route path="customers/:id" element={<CustomerDetail />} />
 
               {/* ⬇⬇ 여기 추가! 고객 신규등록 페이지 */}
               <Route path="customers/new" element={<CustomerForm />} />
