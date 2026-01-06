@@ -1,9 +1,9 @@
-import React, { useState, useContext } from "react";
-import { CustomerContext } from "../../context/CustomerContext";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCustomerContext } from "../../context/CustomerContext";
 
 const CustomerForm = () => {
-  const { addCustomer } = useContext(CustomerContext);
+  const { createCustomer } = useCustomerContext();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -34,16 +34,14 @@ const CustomerForm = () => {
   };
 
   // 저장 버튼 클릭 시 동작
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newCustomer = {
-      id: Date.now(),
       ...form,
-      contractStatus: "진행중", // 리스트에 표시용
     };
 
-    addCustomer(newCustomer);
+    await createCustomer(newCustomer);
 
     alert("고객 등록 완료!");
     navigate("/admin/customers");
@@ -52,8 +50,8 @@ const CustomerForm = () => {
   return (
     <div>
       <h1>고객 기본정보 등록</h1>
+
       <form onSubmit={handleSubmit} style={{ marginTop: "20px" }}>
-        
         <div>
           <label>이름</label><br />
           <input name="name" value={form.name} onChange={handleChange} required />
@@ -122,13 +120,17 @@ const CustomerForm = () => {
             <option value="">선택</option>
             <option value="가망고객">가망고객</option>
             <option value="고객">고객</option>
-            <option value="계약종료">계약종료</option>
           </select>
         </div>
 
         <div>
           <label>상담내용</label><br />
-          <textarea name="memo" value={form.memo} onChange={handleChange} rows="4" />
+          <textarea
+            name="memo"
+            value={form.memo}
+            onChange={handleChange}
+            rows="4"
+          />
         </div>
 
         <button type="submit" style={{ marginTop: "20px" }}>
